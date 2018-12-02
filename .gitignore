@@ -1,0 +1,8 @@
+/nbproject/private/
+/vendor
+/storage/logs/*
+/storage/databases_backup/*
+/storage/files_backup/*
+.env
+nbproject/
+/.idea

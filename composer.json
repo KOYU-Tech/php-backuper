@@ -1,0 +1,16 @@
+{
+    "require": {
+        "nixsolutions/yandex-php-library": "dev-master",
+        "vlucas/phpdotenv": "^2.5",
+        "monolog/monolog": "^1.23",
+        "phpmailer/phpmailer": "^6.0"
+    },
+    "autoload": {
+        "classmap": [
+            "app/"
+        ],
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}
