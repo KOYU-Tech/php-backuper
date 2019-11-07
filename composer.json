@@ -1,9 +1,11 @@
 {
     "require": {
+        "php": "^7.2",
         "nixsolutions/yandex-php-library": "dev-master",
         "vlucas/phpdotenv": "^2.5",
         "monolog/monolog": "^1.23",
-        "phpmailer/phpmailer": "^6.0"
+        "phpmailer/phpmailer": "^6.0",
+        "kunalvarma05/dropbox-php-sdk": "^0.2.1"
     },
     "autoload": {
         "classmap": [

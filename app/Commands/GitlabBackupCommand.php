@@ -1,7 +1,8 @@
 <?php
-namespace App\Command;
+//TODO REFACTOR
+namespace App\Commands;
 
-use App\Command\BaseCommand;
+use App\Commands\BaseCommand;
 
 class GitlabBackupCommand extends BaseCommand {
     

@@ -2,10 +2,10 @@
 require __DIR__ . '/functions.php';
 require __DIR__ . '/vendor/autoload.php';
 
-use App\RegisterCommands;
+use App\RunCommand;
 
 if(isset($argv[1])) {
-    $registry = new RegisterCommands($argv[1]);
+    $registry = new RunCommand($argv[1]);
 } else {
     echo 'Необходимо передать название команды';
 }

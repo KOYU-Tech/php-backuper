@@ -1,7 +1,7 @@
 <?php
-namespace App\Command;
+namespace App\Commands;
 
-use App\Command\BaseCommand;
+use App\Commands\BaseCommand;
 
 class DatabasesBackupCommand extends BaseCommand {
     
