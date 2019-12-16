@@ -39,8 +39,8 @@ class FilesBackupCommand extends AbstractCommand
             $excludeString .= "--exclude \"{$excludedItem}\" ";
         }
 
-        //TODO remode relative path
-        $command = "tar czf {$pathToArchive} {$excludeString} {$pathToFile} --warning=no-file-changed";
+        //TODO remove absolute path in the archive
+        $command = "tar -czvf {$pathToArchive} {$excludeString} {$pathToFile} --warning=no-file-changed";
 
         exec($command, $output, $return_var);
 
