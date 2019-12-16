@@ -17,8 +17,7 @@ class FilesBackupCommand extends AbstractCommand
     {
         foreach ($this->files as $file) {
             //create archive
-            $pathToArchive = $this->buildPathToArchive($file['entry']);
-            $this->createArchive($pathToArchive, $file['entry'], $file['excluded']);
+            $pathToArchive = $this->createArchive($file['entry'], $file['excluded']);
 
             //upload archive
             $folderToUpload = date("d.m.Y");
@@ -31,31 +30,27 @@ class FilesBackupCommand extends AbstractCommand
         $this->logger->sendReport("Backup files created");
     }
 
-    protected function buildPathToArchive($path): string
+    protected function createArchive(string $pathToFile, $excluded=[])
     {
-        $fileName = basename($path);
-        $pathToArchive = base_path("storage/backups/{$fileName}.tar.gz");
-
-        return $pathToArchive;
-    }
-
-    protected function createArchive(string $pathToArchive, string $pathToFile, $excluded=[])
-    {
+        $pathToArchive = base_path("storage/backups/". basename($pathToFile) .".tar.gz");
 
         $excludeString = '';
         foreach ($excluded as $excludedItem) {
             $excludeString .= "--exclude \"{$excludedItem}\" ";
         }
 
+        //TODO remode relative path
         $command = "tar czf {$pathToArchive} {$excludeString} {$pathToFile} --warning=no-file-changed";
 
         exec($command, $output, $return_var);
 
         if($return_var) {
-            $this->logger->exitWithError("Failed to create archive {$pathToFile}. Error code {$return_var}");
+            $this->logger->exitWithError("Failed to create archive {$pathToFile}. Command: \"{$command}\". Error code: \"{$return_var}\"");
         }
 
         $this->logger->debug("Archive of {$pathToFile} was created");
+
+        return $pathToArchive;
     }
 }
 

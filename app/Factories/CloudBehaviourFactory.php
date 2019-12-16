@@ -17,7 +17,7 @@ class CloudBehaviourFactory
     public function __construct()
     {
         $config = ConfigSingleton::getInstance();
-        $this->type = $config->get('cloud.type');
+        $this->type = $config->get('cloud_storage.type');
     }
 
     public function create(string $baseFolder): CloudBehaviourInterface

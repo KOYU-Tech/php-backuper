@@ -12,6 +12,8 @@ class AbstractCommand
     protected $cloudStorage;
     protected $logger;
     protected $config;
+    //must be set in child classes
+    protected $cloudStorageFolderConfig;
 
     public function __construct()
     {
