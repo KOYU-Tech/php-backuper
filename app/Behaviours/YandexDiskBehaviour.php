@@ -148,7 +148,7 @@ class YandexDiskBehaviour implements CloudBehaviourInterface
 
         try {
             $this->diskClient->uploadFile(
-                DIRECTORY_SEPARATOR.$this->baseFolder.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR,
+                "/{$this->baseFolder}/{$folder}/",
                 [
                     'path' => $file,
                     'size' => $fileSize,
