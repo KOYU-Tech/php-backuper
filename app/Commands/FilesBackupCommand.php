@@ -1,25 +1,16 @@
 <?php
 namespace App\Commands;
 
-use App\Interfaces\CommandInterface;
-use App\Factories\CloudBehaviourFactory;
-use App\Singletons\LoggerSingleton;
-use App\Singletons\ConfigSingleton;
-
-class FilesBackupCommand implements CommandInterface {
-    protected $cloudStorage;
-    protected $logger;
-    protected $config;
+class FilesBackupCommand extends AbstractCommand
+{
+    protected $cloudStorageFolderConfig = "files_dump.cloud_storage_folder";
     protected $files;
 
     public function __construct()
     {
-        $this->logger = LoggerSingleton::getInstance();
-        $this->config = ConfigSingleton::getInstance();
-        $this->files = $this->config->get('files');
+        parent::__construct();
 
-        $baseFolder = $this->config->get("files_dump.cloud_storage_folder");
-        $this->cloudStorage = (new CloudBehaviourFactory())->create($baseFolder);
+        $this->files = $this->config->get('files');
     }
 
     public function execute(): void
