@@ -7,7 +7,7 @@ use App\RunCommand;
 if(isset($argv[1])) {
     $registry = new RunCommand($argv[1]);
 } else {
-    echo 'Необходимо передать название команды';
+    echo 'You must pass the name of the command';
 }
 
 

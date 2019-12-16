@@ -4,30 +4,32 @@ namespace App\Commands;
 use App\Interfaces\CommandInterface;
 use App\Factories\CloudBehaviourFactory;
 use App\Singletons\LoggerSingleton;
+use App\Singletons\ConfigSingleton;
 
 class FilesBackupCommand implements CommandInterface {
     protected $cloudStorage;
     protected $logger;
+    protected $config;
+    protected $files;
 
     public function __construct()
     {
         $this->logger = LoggerSingleton::getInstance();
+        $this->config = ConfigSingleton::getInstance();
+        $this->files = $this->config->get('files');
 
-        $type = getenv("CLOUD_TYPE");
-        $baseFolder = getenv("FILES_DUMP_FOLDER");
+        $baseFolder = $this->config->get("FILES_DUMP_FOLDER");
 
         $factory = new CloudBehaviourFactory();
 
-        $this->cloudStorage = $factory->create($type, $baseFolder);
+        $this->cloudStorage = $factory->create($baseFolder);
     }
 
     public function execute(): void
     {
-        $files = $this->getFilesForBackup(getenv("FILES_FOLDER"), getenv("EXCLUDE_FILES"));
-
-        foreach ($files as $file) {
+        foreach ($this->files as $file) {
             //создаем архив
-            $pathToArchive = $this->buildPathToArchive($file);
+            $pathToArchive = $this->buildPathToArchive($file['entry']);
             $this->createArchive($file, $pathToArchive);
 
             //upload archive
@@ -41,26 +43,10 @@ class FilesBackupCommand implements CommandInterface {
         $this->logger->sendEmailWithLog("Backup files created");
     }
 
-    protected function getFilesForBackup($filesFolder, $excludedFilesString)
-    {
-        $excludedFiles = explode(",", $excludedFilesString);
-        $excludedFiles = array_map('trim', $excludedFiles);
-        array_push($excludedFiles, '..');
-        array_push($excludedFiles, '.');
-        array_push($excludedFiles, base_folder());
-
-        $files = array_diff(scandir($filesFolder), $excludedFiles);
-        $files = array_map(function ($str) use($filesFolder) {
-            return realpath("{$filesFolder}/{$str}");
-        }, $files);
-
-        return $files;
-    }
-
     protected function buildPathToArchive($path): string
     {
         $fileName = basename($path);
-        $pathToArchive = base_path()."storage/backups/{$fileName}.zip";
+        $pathToArchive = base_path("storage/backups/{$fileName}.tar.gz");
 
         return $pathToArchive;
     }
@@ -76,3 +62,30 @@ class FilesBackupCommand implements CommandInterface {
         $this->logger->debug("Archive of {$pathToFile} was created");
     }
 }
+
+
+
+//    foreach ($this->config->files as $item) {
+//
+//        $excludeString = '';
+//        foreach ($item->excluded as $excludedItem) {
+//            $excludeString .= "--exclude \"{$excludedItem}\" ";
+//        }
+//
+//        $pathForNewArchive = $this->pathForBackup . basename($item->entry) . '.tar.gz';
+//        $command = "tar czf {$pathForNewArchive} {$excludeString} {$item->entry} --warning=no-file-changed";
+//
+//        //создаем архив
+//        exec($command);
+//
+//        //определяем размер архива, чтобы освоболить под него место на яндекс диске
+//        $fileSize = filesize($pathForNewArchive);
+//        //определяем свобоное место на диске
+//        $this->checkFreeSpaceOnYandexDisk($fileSize, $this->WEBDAV_MININMUM_FREE_SPACE_GB, $this->baseFolderForCommandOnYandexDisk);
+//        //загружаем архив дампа на яндекс диск
+//        $this->uploadToYandexDisk($pathForNewArchive, $pathToUpload);
+//        //удаляем архив с дампом с сервера
+//        unlink($pathForNewArchive);
+//    }
+//
+//    $this->sendEmailWithLog("Бэкап файлов создан");

@@ -3,5 +3,6 @@
 /storage/logs/*
 /storage/backups/*
 .env
+config.json
 nbproject/
 /.idea

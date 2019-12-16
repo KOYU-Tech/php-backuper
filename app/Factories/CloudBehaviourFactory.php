@@ -6,15 +6,23 @@ namespace App\Factories;
 use App\Behaviours\YandexDiskBehaviour;
 use App\Behaviours\DropboxBehaviour;
 use App\Interfaces\CloudBehaviourInterface;
+use App\Singletons\DotenvSingleton;
 
 class CloudBehaviourFactory
 {
     const YANDEX_DISK = 1;
     const DROPBOX = 2;
+    protected $type;
 
-    public function create(int $type, string $baseFolder): CloudBehaviourInterface
+    public function __construct()
     {
-        switch ($type) {
+        $dotenv = DotenvSingleton::getInstance();
+        $this->type = $dotenv->getEnv('CLOUD_TYPE');
+    }
+
+    public function create(string $baseFolder): CloudBehaviourInterface
+    {
+        switch ($this->type) {
             case self::YANDEX_DISK:
                 return new YandexDiskBehaviour($baseFolder);
 

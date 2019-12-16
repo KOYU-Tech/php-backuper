@@ -1,0 +1,20 @@
+{
+  "db_users": [
+    {
+      "user": "user1",
+      "password": "test"
+    },
+    {
+      "user": "user2",
+      "password": "test"
+    }
+  ],
+  "files": [
+    {
+      "entry": "/path/dir1",
+      "excluded": [
+        "/path/dir1/tmp"
+      ]
+    }
+  ]
+}
