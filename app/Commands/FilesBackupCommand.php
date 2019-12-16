@@ -18,29 +18,26 @@ class FilesBackupCommand implements CommandInterface {
         $this->config = ConfigSingleton::getInstance();
         $this->files = $this->config->get('files');
 
-        $baseFolder = $this->config->get("FILES_DUMP_FOLDER");
-
-        $factory = new CloudBehaviourFactory();
-
-        $this->cloudStorage = $factory->create($baseFolder);
+        $baseFolder = $this->config->get("files_dump.cloud_storage_folder");
+        $this->cloudStorage = (new CloudBehaviourFactory())->create($baseFolder);
     }
 
     public function execute(): void
     {
         foreach ($this->files as $file) {
-            //создаем архив
+            //create archive
             $pathToArchive = $this->buildPathToArchive($file['entry']);
-            $this->createArchive($file, $pathToArchive);
+            $this->createArchive($pathToArchive, $file['entry'], $file['excluded']);
 
             //upload archive
             $folderToUpload = date("d.m.Y");
             $this->cloudStorage->upload($pathToArchive, $folderToUpload);
 
-            //удаляем архив с дампом с сервера
+            //delete the archive with the dump from the server
             unlink($pathToArchive);
         }
 
-        $this->logger->sendEmailWithLog("Backup files created");
+        $this->logger->sendReport("Backup files created");
     }
 
     protected function buildPathToArchive($path): string
@@ -51,9 +48,17 @@ class FilesBackupCommand implements CommandInterface {
         return $pathToArchive;
     }
 
-    protected function createArchive($pathToFile, $pathToArchive)
+    protected function createArchive(string $pathToArchive, string $pathToFile, $excluded=[])
     {
-        exec("zip -r -T {$pathToArchive} {$pathToFile}", $output, $return_var);
+
+        $excludeString = '';
+        foreach ($excluded as $excludedItem) {
+            $excludeString .= "--exclude \"{$excludedItem}\" ";
+        }
+
+        $command = "tar czf {$pathToArchive} {$excludeString} {$pathToFile} --warning=no-file-changed";
+
+        exec($command, $output, $return_var);
 
         if($return_var) {
             $this->logger->exitWithError("Failed to create archive {$pathToFile}. Error code {$return_var}");
@@ -63,29 +68,3 @@ class FilesBackupCommand implements CommandInterface {
     }
 }
 
-
-
-//    foreach ($this->config->files as $item) {
-//
-//        $excludeString = '';
-//        foreach ($item->excluded as $excludedItem) {
-//            $excludeString .= "--exclude \"{$excludedItem}\" ";
-//        }
-//
-//        $pathForNewArchive = $this->pathForBackup . basename($item->entry) . '.tar.gz';
-//        $command = "tar czf {$pathForNewArchive} {$excludeString} {$item->entry} --warning=no-file-changed";
-//
-//        //создаем архив
-//        exec($command);
-//
-//        //определяем размер архива, чтобы освоболить под него место на яндекс диске
-//        $fileSize = filesize($pathForNewArchive);
-//        //определяем свобоное место на диске
-//        $this->checkFreeSpaceOnYandexDisk($fileSize, $this->WEBDAV_MININMUM_FREE_SPACE_GB, $this->baseFolderForCommandOnYandexDisk);
-//        //загружаем архив дампа на яндекс диск
-//        $this->uploadToYandexDisk($pathForNewArchive, $pathToUpload);
-//        //удаляем архив с дампом с сервера
-//        unlink($pathForNewArchive);
-//    }
-//
-//    $this->sendEmailWithLog("Бэкап файлов создан");

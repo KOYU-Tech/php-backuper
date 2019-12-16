@@ -52,11 +52,11 @@ class LoggerSingleton
     public function exitWithError($message)
     {
         $this->error($message);
-        $this->sendEmailWithLog("Ошибка при создании бэкапа");
-        exit($message);
+        $this->sendReport("Ошибка при создании бэкапа");
+        exit();
     }
 
-    public function sendErrorReport($title)
+    public function sendReport(string $title)
     {
         return ;
 

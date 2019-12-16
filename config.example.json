@@ -9,6 +9,15 @@
       "password": "test"
     }
   ],
+  "cloud_storage": {
+    "type": 1,
+    "yandex": {
+      "token": ""
+    },
+    "dropbox": {
+
+    }
+  },
   "files": [
     {
       "entry": "/path/dir1",

@@ -6,7 +6,7 @@ namespace App\Factories;
 use App\Behaviours\YandexDiskBehaviour;
 use App\Behaviours\DropboxBehaviour;
 use App\Interfaces\CloudBehaviourInterface;
-use App\Singletons\DotenvSingleton;
+use App\Singletons\ConfigSingleton;
 
 class CloudBehaviourFactory
 {
@@ -16,8 +16,8 @@ class CloudBehaviourFactory
 
     public function __construct()
     {
-        $dotenv = DotenvSingleton::getInstance();
-        $this->type = $dotenv->getEnv('CLOUD_TYPE');
+        $config = ConfigSingleton::getInstance();
+        $this->type = $config->get('cloud.type');
     }
 
     public function create(string $baseFolder): CloudBehaviourInterface
@@ -30,7 +30,7 @@ class CloudBehaviourFactory
                 return new DropboxBehaviour($baseFolder);
 
             default:
-                throw new \Error("Cloud behaviour not found");
+                throw new \Exception("Cloud behaviour not found");
         }
     }
 }
